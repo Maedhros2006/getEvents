@@ -1,5 +1,5 @@
 # Define the ICS URL of your calendar
-ics_url="your_url"
+ics_url="https://calendar.google.com/calendar/ical/schaefmo2006%40gmail.com/private-c93b2594bb1ad7132cf2630b4b48aeb3/basic.ics"
 
 # Get today's date in YYYYMMDD format
 today=$(date +%Y%m%d)
@@ -23,13 +23,20 @@ BEGIN {
     }
     inEvent = 0;
 }
-/DTSTART/ {
-    eventBuffer = $0;
+/^DTSTART:/ {
     if (index($0, date) > 0) {
         matched = 1;
     }
+    # Replace "DTSTART" with "start"
+    sub(/^DTSTART:/, "start:", $0);
+    eventBuffer = eventBuffer "\n" $0;
 }
-/SUMMARY|DESCRIPTION|DTEND/ {
+/^DTEND:/ {
+    # Replace "DTEND" with "end"
+    sub(/^DTEND:/, "end:", $0);
+    eventBuffer = eventBuffer "\n" $0;
+}
+/^SUMMARY|DESCRIPTION/ {
     eventBuffer = eventBuffer "\n" $0;
 }
 ' 
