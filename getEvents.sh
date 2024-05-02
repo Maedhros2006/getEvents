@@ -1,5 +1,5 @@
 # Define the ICS URL of your calendar
-ics_url="https://calendar.google.com/calendar/ical/schaefmo2006%40gmail.com/private-c93b2594bb1ad7132cf2630b4b48aeb3/basic.ics"
+ics_url="your_url"
 
 # Get today's date in YYYYMMDD format
 today=$(date +%Y%m%d)
