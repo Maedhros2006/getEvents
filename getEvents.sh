@@ -18,17 +18,28 @@ BEGIN {
 }
 /END:VEVENT/ {
     if (matched) {
-        # Extract hour and minute from start and end variables
-        start1 = substr(start, 10, 2);
-        start2 = substr(start, 12, 2);
-        end1 = substr(end, 10, 2);
-        end2 = substr(end, 12, 2);
+    # Extract hour and minute from start and end variables
 
-        # Output the data in the specified order
-        print "Event: " summary;
-        print "start: " start1 ":" start2;
-        print "end: " end1 ":" end2;
-        print "";  # Print an empty line to separate events
+
+    #Adding time shift. e.g. "2" for +2 UTC
+	timeshift="2"
+
+    start1 = substr(start, 10, 2);
+    start2 = substr(start, 12, 2);
+	start3 = start1 start2 ;
+	start1= start1+timeshift;
+	s3 = end1 end2 ;
+
+    end1 = substr(end, 10, 2);
+    end2 = substr(end, 12, 2);
+	end1= end1+timeshift;
+
+
+    # Output the data in the specified order
+    print "Event: " summary;
+    print "start: " start1 ":" start2;
+    print "end: " end1 ":" end2;
+    print "";  # Print an empty line to separate events 
     }
     inEvent = 0;
 }
@@ -56,4 +67,3 @@ BEGIN {
         summary = $0;
     }
 }'
-
