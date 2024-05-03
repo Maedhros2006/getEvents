@@ -1,4 +1,3 @@
-# Define the ICS URL of your calendar
 ics_url="your_url"
 
 # Get today's date in YYYYMMDD format
@@ -9,17 +8,27 @@ curl -s "$ics_url" | awk -v date="$today" '
 BEGIN {
     inEvent = 0;
     matched = 0;
-    eventBuffer = "";
 }
 /BEGIN:VEVENT/ {
     inEvent = 1;
-    matched = 0;
-    eventBuffer = "";  # Reset event buffer at the beginning of a new event
+    matched = 0;  # Reset the matched flag at the beginning of a new event
+    start = "";  # Reset variables at the start of a new event
+    end = "";
+    summary = "";
 }
 /END:VEVENT/ {
     if (matched) {
-        print eventBuffer;  # Print the event buffer if matched
-        print "";  # Print an empty line after each event
+        # Extract hour and minute from start and end variables
+        start1 = substr(start, 10, 2);
+        start2 = substr(start, 12, 2);
+        end1 = substr(end, 10, 2);
+        end2 = substr(end, 12, 2);
+
+        # Output the data in the specified order
+        print "Event: " summary;
+        print "start: " start1 ":" start2;
+        print "end: " end1 ":" end2;
+        print "";  # Print an empty line to separate events
     }
     inEvent = 0;
 }
@@ -27,16 +36,24 @@ BEGIN {
     if (index($0, date) > 0) {
         matched = 1;
     }
-    # Replace "DTSTART" with "start"
-    sub(/^DTSTART:/, "start:", $0);
-    eventBuffer = eventBuffer "\n" $0;
+    # Store the start time without the label
+    sub(/^DTSTART:/, "", $0);
+    if (matched) {
+        start = $0;
+    }
 }
 /^DTEND:/ {
-    # Replace "DTEND" with "end"
-    sub(/^DTEND:/, "end:", $0);
-    eventBuffer = eventBuffer "\n" $0;
+    # Store the end time without the label
+    sub(/^DTEND:/, "", $0);
+    if (matched) {
+        end = $0;
+    }
 }
-/^SUMMARY|DESCRIPTION/ {
-    eventBuffer = eventBuffer "\n" $0;
-}
-' 
+/^SUMMARY:/ {
+    # Store the summary without the label
+    sub(/^SUMMARY:/, "", $0);
+    if (matched) {
+        summary = $0;
+    }
+}'
+
